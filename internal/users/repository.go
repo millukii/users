@@ -12,6 +12,10 @@ type Repository interface {
 type repo struct {
 }
 
+func NewUserRepository() Repository {
+	return &repo{}
+}
+
 func (r *repo) Save(ctx context.Context, user *User) error {
 	return nil
 }

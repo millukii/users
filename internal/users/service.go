@@ -15,12 +15,18 @@ type svc struct {
 	repo Repository
 }
 
-func NewUserService() UserService {
-	return &svc{}
+func NewUserService(client Client, repo Repository) UserService {
+	return &svc{
+		client: client,
+		repo: repo,
+	}
 }
 
 func (svc *svc)	Save(ctx context.Context, user *User) error {
 	svc.client.Get(ctx, user.Name, user.ID)
+
+	//enriquecer datos
+	//validaciones
 	return svc.repo.Save(ctx, user)
 }
 func (svc *svc)		Get(ctx context.Context,id string) (*User, error) {

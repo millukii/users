@@ -2,6 +2,11 @@ package main
 
 import (
 	"api-users/internal/users"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/gin-gonic/gin"
 	actuator "github.com/sinhashubham95/go-actuator"
@@ -10,6 +15,9 @@ import (
 
 
 func main() {
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	
 	// create the gin engine
 	engine := gin.Default()
@@ -43,9 +51,48 @@ func main() {
 
 	engine.TrustedPlatform = gin.PlatformGoogleAppEngine
 	
-	userSvc := users.NewUserService()
-	userHandler :=	NewUserHandler(userSvc)
+	httpClient := &http.Client{
+		
+	}
+	client := users.NewClient(httpClient )
+
+	userRepo := users.NewUserRepository()
+
+	userSvc := users.NewUserService(client, userRepo)
+
+	userHandler :=	users.NewUserHandler(userSvc)
+	
 	engine =	setupRouter(engine,userHandler)
+
   
-	engine.Run(port)
+
+			go func() {
+					if err :=	engine.Run(port); err != nil {
+						log.Println("failed to start server",err)
+						os.Exit(1)
+					}
+				}()
+
+				log.Println("ready to serve requests on " + port)
+				<-c
+				log.Println("gracefully shutting down")
+				os.Exit(0)
+
+}
+// middleware setup
+func setupRouter(r *gin.Engine, handler users.UserHandler) *gin.Engine {
+
+	r.GET("/users", func(c *gin.Context) {
+		handler.GetAll(c)
+	})
+
+	r.GET("/users/:id", func(c *gin.Context) {
+		handler.Get(c)
+	})
+
+	r.POST("/users", func(c *gin.Context) {
+		handler.Create(c)
+	})
+
+	return r
 }

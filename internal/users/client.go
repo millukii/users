@@ -14,7 +14,7 @@ type Client interface {
 type httpClient struct {
 	client	http.Client
 }
-func NewHttpClient(client *http.Client) Client {
+func NewClient(client *http.Client) Client {
 	return &httpClient{
 		client: *client,
 	}
