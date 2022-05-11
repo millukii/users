@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
 )
 
 type user struct {
@@ -16,7 +17,9 @@ func NewUserHandler(svc UserService) UserHandler {
 }
 
 func (u *user) Create(c *gin.Context) error {
-	validUser := &User{}
+	validUser := &
+	
+	User{}
 	if err := c.ShouldBindJSON(&validUser); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return nil

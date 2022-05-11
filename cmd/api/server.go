@@ -56,7 +56,20 @@ func main() {
 	}
 	client := users.NewClient(httpClient )
 
-	userRepo := users.NewUserRepository()
+	initRepo := []users.User{}
+
+	initRepo = append(initRepo, users.User{
+		ID:   "1",
+		Name: "John",
+		Email: "",
+	})
+
+		initRepo = append(initRepo,  users.User{
+		ID:   "2",
+		Name: "Rosa",
+		Email: "",
+	})
+	userRepo := users.NewUserRepository(initRepo)
 
 	userSvc := users.NewUserService(client, userRepo)
 
@@ -64,20 +77,17 @@ func main() {
 	
 	engine =	setupRouter(engine,userHandler)
 
-  
+	go func() {
+			if err :=	engine.Run(port); err != nil {
+				log.Println("failed to start server",err)
+				os.Exit(1)
+			}
+	}()
 
-			go func() {
-					if err :=	engine.Run(port); err != nil {
-						log.Println("failed to start server",err)
-						os.Exit(1)
-					}
-				}()
-
-				log.Println("ready to serve requests on " + port)
-				<-c
-				log.Println("gracefully shutting down")
-				os.Exit(0)
-
+	log.Println("ready to serve requests on " + port)
+	<-c
+	log.Println("gracefully shutting down")
+	os.Exit(0)
 }
 // middleware setup
 func setupRouter(r *gin.Engine, handler users.UserHandler) *gin.Engine {

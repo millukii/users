@@ -5,7 +5,7 @@ import "context"
 type UserService interface {
 	Save(ctx context.Context, user *User) error
 	Get(ctx context.Context,id string) (*User, error)
-	GetAll(ctx context.Context,) ([]*User, error)
+	GetAll(ctx context.Context,) ([]User, error)
 	Delete(ctx context.Context,id string) error
 	Update(ctx context.Context,user *User) error
 }
@@ -32,7 +32,7 @@ func (svc *svc)	Save(ctx context.Context, user *User) error {
 func (svc *svc)		Get(ctx context.Context,id string) (*User, error) {
 	return svc.repo.Get(ctx, id)
 }
-func (svc *svc)		GetAll(ctx context.Context,) ([]*User, error){
+func (svc *svc)		GetAll(ctx context.Context,) ([]User, error){
 	return svc.repo.GetAll(ctx)
 }
 func (svc *svc)		Delete(ctx context.Context,id string) error{
